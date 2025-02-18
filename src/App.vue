@@ -25,11 +25,13 @@ const tg = window.Telegram?.WebApp;
 
 onMounted(() => {
   if (tg) {
-    tg.expand(); // Expande o Mini App para tela cheia
+    tg.expand();
+    console.log("Dados recebidos do Telegram:", tg.initDataUnsafe);
     user.value = tg.initDataUnsafe?.user || null;
   }
 });
 </script>
+
 
 <template>
   <div class="flex flex-col items-center justify-center h-screen bg-gray-100 p-4">
