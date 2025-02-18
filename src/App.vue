@@ -26,10 +26,20 @@ const tg = window.Telegram?.WebApp;
 onMounted(() => {
   if (tg) {
     tg.expand();
-    console.log("Dados recebidos do Telegram:", tg.initDataUnsafe);
-    user.value = tg.initDataUnsafe?.user || null;
+    console.log("Dados recebidos do Telegram:", tg.initDataUnsafe); // Log local
+
+    // Enviar os logs para um endpoint de monitoramento
+    fetch("https://api.webhook.site/SEU-ENDPOINT", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        timestamp: new Date().toISOString(),
+        data: tg.initDataUnsafe,
+      }),
+    });
   }
 });
+
 </script>
 
 
