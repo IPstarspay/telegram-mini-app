@@ -4,29 +4,29 @@
     class="pa-0 fill-height"
     style="background-color: #121212;"
   >
-    <v-row
-      justify="center"
-      align="center"
+    <v-form
+      ref="form"
+      v-model="valid"
+      lazy-validation
     >
-      <v-col
-        cols="12"
-        sm="8"
-        md="6"
+      <v-row
+        justify="center"
+        align="center"
       >
-        <v-card
-          dark
-          outlined
-          class="pa-4"
+        <v-col
+          cols="12"
+          sm="8"
+          md="6"
         >
-          <v-card-title class="justify-center text-h5 font-weight-bold">
-            Abertura de Conta
-          </v-card-title>
-          <v-card-text>
-            <v-form
-              ref="form"
-              v-model="valid"
-              lazy-validation
-            >
+          <v-card
+            dark
+            outlined
+            class="pa-4"
+          >
+            <v-card-title class="justify-center text-h5 font-weight-bold">
+              Abertura de Conta
+            </v-card-title>
+            <v-card-text>
               <!-- Nome Completo -->
               <v-text-field
                 v-model="formData.fullName"
@@ -69,31 +69,29 @@
               />
               <!-- Data de Nascimento -->
               <v-menu
-                ref="menu"
-                v-model="menu"
+                v-model:model-value="menu"
                 :close-on-content-click="false"
                 transition="scale-transition"
                 offset-y
                 min-width="290px"
               >
-                <template #activator="{ on, attrs }">
+                <template #activator="{ props }">
                   <v-text-field
                     v-model="formData.birthDate"
                     label="Data de Nascimento"
                     prepend-icon="mdi-calendar"
                     readonly
-                    v-bind="attrs"
+                    v-bind="props"
                     outlined
                     dense
                     required
                     color="primary"
-                    v-on="on"
                   />
                 </template>
                 <v-date-picker
                   v-model="formData.birthDate"
                   no-title
-                  @input="menu = false"
+                  @update:model-value="menu = false"
                 />
               </v-menu>
               <!-- Botões -->
@@ -127,23 +125,24 @@
                   </v-btn>
                 </v-col>
               </v-row>
-            </v-form>
-          </v-card-text>
-        </v-card>
-      </v-col>
-    </v-row>
+            </v-card-text>
+          </v-card>
+        </v-col>
+      </v-row>
+    </v-form>
   </v-container>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue';
+import { VForm } from 'vuetify/components/VForm';
+import { VMenu } from 'vuetify/components/VMenu';
 
 interface FormData {
   fullName: string;
   email: string;
   phone: string;
   cpf: string;
-  // Inicializamos com a data atual no formato ISO (YYYY-MM-DD)
   birthDate: string;
 }
 
@@ -151,7 +150,7 @@ interface FormData {
 const today = new Date().toISOString().slice(0, 10);
 
 const valid = ref(false);
-const form = ref();
+const form = ref<InstanceType<typeof VForm> | null>(null);
 const menu = ref(false);
 
 const formData = ref<FormData>({
@@ -183,9 +182,9 @@ const cpfRules = [
   (v: string) => (v && v.length === 11) || 'CPF deve ter 11 dígitos',
 ];
 
-const submitForm = () => {
-  if ((form.value as any).validate()) {
-    // Aqui você pode chamar a API para criar a conta
+const submitForm = (): void => {
+  if (form.value?.validate()) {
+    // Chame a API ou faça o processamento necessário aqui
     alert('Conta criada com sucesso!');
   }
 };
