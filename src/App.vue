@@ -9,10 +9,10 @@
   </v-app>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { onMounted } from 'vue';
 import { useTelegramStore } from '@/stores/telegramStore';
-import Header from '@/components/Header.vue';
+import Header from '@/components/HeaderComponent.vue';
 
 const telegramStore = useTelegramStore();
 

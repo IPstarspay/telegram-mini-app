@@ -1,20 +1,3 @@
-<script setup lang="ts">
-import { onMounted, watch } from 'vue';
-import { useQuoteStore } from '@/stores/quoteStore';
-import QuoteChart from '@/components/QuoteChart.vue';
-
-const store = useQuoteStore();
-
-// Sempre que o símbolo selecionado mudar, atualiza a cotação
-watch(() => store.selectedSymbol, () => {
-  store.fetchQuote();
-});
-
-onMounted(() => {
-  store.fetchQuote();
-});
-</script>
-
 <template>
   <v-container class="py-4">
     <v-row justify="center">
@@ -60,5 +43,36 @@ onMounted(() => {
         </div>
       </v-col>
     </v-row>
+    <v-row justify="center">
+      <v-col
+        cols="12"
+        md="8"
+        class="text-center"
+      >
+        <v-btn
+          color="grey"
+          block
+          to="/"
+        >
+          Voltar
+        </v-btn>
+      </v-col>
+    </v-row>
   </v-container>
 </template>
+
+<script setup lang="ts">
+import { onMounted, watch } from 'vue';
+import { useQuoteStore } from '@/stores/quoteStore';
+import QuoteChart from '@/components/QuoteChart.vue';
+
+const store = useQuoteStore();
+
+watch(() => store.selectedSymbol, () => {
+  store.fetchQuote();
+});
+
+onMounted(() => {
+  store.fetchQuote();
+});
+</script>
