@@ -23,9 +23,7 @@
             Para abrir uma conta, primeiro conecte sua carteira TON
           </v-alert>
 
-          <div
-            id="ton-connect-button"
-          />
+          <div id="ton-connect-button" />
         </v-card-text>
 
         <v-card-text v-else>
@@ -140,7 +138,6 @@ export default defineComponent({
     const telegramStore = useTelegramStore();
 
     onMounted(() => {
-      // Adicione um pequeno delay para garantir a renderização
       setTimeout(() => {
         walletStore.initializeTonConnect();
       }, 100);
@@ -157,7 +154,14 @@ export default defineComponent({
       (v: string) => v.length === 11 || 'CPF deve ter 11 dígitos',
     ];
 
-    const valid = ref(false);
+    const valid = computed(() => {
+      return (
+        formData.value.fullName.trim() !== '' &&
+        /^\d{11}$/.test(formData.value.cpf) &&
+        formData.value.birthDate !== null
+      );
+    });
+
     const menu = ref(false);
 
     // Formata a data para exibição no input
