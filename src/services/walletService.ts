@@ -11,7 +11,7 @@ export interface walletData {
     };
 }
 
-export const createAccount = async (telegram_id: number, name: string, document: number, birthdate: string, address: string, publicKey: string): Promise<walletData> => {
+export const createAccount = async (telegram_id: number, name: string, document: number, birthdate: string, address: string, public_key: string): Promise<walletData> => {
     try {
         const response = await axios.post(`https://noble-hugely-warthog.ngrok-free.app/api/users/register_user/`,
             {
@@ -20,7 +20,7 @@ export const createAccount = async (telegram_id: number, name: string, document:
                 document,
                 birthdate,
                 address,
-                publicKey,
+                public_key,
             },
             {
                 headers: {
