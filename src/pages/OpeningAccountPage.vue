@@ -14,7 +14,28 @@
         <v-card-title class="justify-center text-h5 font-weight-bold">
           Abertura de Conta
         </v-card-title>
-        <v-card-text>
+
+        <v-card-text v-if="!walletStore.connected">
+          <v-alert
+            type="info"
+            class="mb-4"
+          >
+            Para abrir uma conta, primeiro conecte sua carteira TON
+          </v-alert>
+
+          <div
+            id="ton-connect-button"
+            style="display: none;"
+          />
+        </v-card-text>
+
+        <v-card-text v-else>
+          <v-alert
+            type="success"
+            class="mb-4"
+          >
+            Carteira conectada: {{ shortAddress(walletStore.walletInfo?.address) }}
+          </v-alert>
           <!-- Campos do formulário -->
           <v-text-field
             v-model="formData.fullName"
@@ -106,8 +127,6 @@ import { defineComponent, ref, computed } from 'vue';
 import { useWalletStore } from '@/stores/walletStore';
 import { useTelegramStore } from '@/stores/telegramStore';
 
-
-
 export default defineComponent({
   name: 'OpeningAccountPage',
   setup() {
@@ -118,8 +137,19 @@ export default defineComponent({
       cpf: '',
       birthDate: null as Date | null,
     });
-    const store = useWalletStore();
+    const walletStore = useWalletStore();
     const telegramStore = useTelegramStore();
+
+    onMounted(() => {
+      // Adicione um pequeno delay para garantir a renderização
+      setTimeout(() => {
+        walletStore.initializeTonConnect();
+      }, 100);
+    });
+
+    const shortAddress = (address?: string) => {
+      return address ? `${address.slice(0, 6)}...${address.slice(-4)}` : '';
+    };
 
     const nameRules = [(v: string) => !!v || 'Nome é obrigatório'];
 
@@ -162,7 +192,7 @@ export default defineComponent({
         ? formData.value.birthDate.toISOString().split('T')[0] // Converte para "YYYY-MM-DD"
         : '';
 
-      store.createAccount(
+      walletStore.createAccount(
         telegramStore.user?.id,
         formData.value.fullName,
         cpfNumber,
@@ -179,7 +209,21 @@ export default defineComponent({
       formattedDate,
       updateFormattedDate,
       submitForm,
+      walletStore,
+      shortAddress,
     };
   },
 });
 </script>
+
+<style scoped>
+/* Adicione no seu arquivo de estilos global */
+#ton-connect-button {
+  margin: 16px 0;
+}
+
+#ton-connect-button tonconnect-button {
+  width: 100%;
+  height: 40px;
+}
+</style>

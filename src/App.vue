@@ -12,6 +12,7 @@
 <script setup lang="ts">
 import { onMounted } from 'vue';
 import { useTelegramStore } from '@/stores/telegramStore';
+// import { useWalletStore } from '@/stores/walletStore';
 import Header from '@/components/HeaderComponent.vue';
 
 const telegramStore = useTelegramStore();
@@ -21,6 +22,9 @@ onMounted(() => {
   if (tg) {
     tg.expand();
     telegramStore.setUser(tg.initDataUnsafe?.user || null);
+
+    // const walletStore = useWalletStore();
+    // walletStore.initializeTonConnect();
   }
 });
 </script>
