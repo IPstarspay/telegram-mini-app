@@ -15,6 +15,16 @@
           Abertura de Conta
         </v-card-title>
 
+        <!-- Mensagem de sucesso -->
+        <v-alert
+          v-if="successMessage"
+          type="success"
+          class="mb-4"
+          dismissible
+        >
+          {{ successMessage }}
+        </v-alert>
+
         <v-card-text v-if="!walletStore.connected">
           <v-alert
             type="info"
@@ -33,6 +43,7 @@
           >
             Carteira conectada: {{ shortAddress(walletStore.walletInfo?.address) }}
           </v-alert>
+
           <!-- Campos do formulário -->
           <v-text-field
             v-model="formData.fullName"
@@ -120,7 +131,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, computed } from 'vue';
+import { defineComponent, ref, computed, onMounted } from 'vue';
 import { useWalletStore } from '@/stores/walletStore';
 import { useTelegramStore } from '@/stores/telegramStore';
 
@@ -129,13 +140,13 @@ export default defineComponent({
   setup() {
     const formData = ref({
       fullName: '',
-      email: '',
-      phone: '',
       cpf: '',
       birthDate: null as Date | null,
     });
+
     const walletStore = useWalletStore();
     const telegramStore = useTelegramStore();
+    const successMessage = ref<string | null>(null); // 🔹 Adicionando estado para sucesso
 
     onMounted(() => {
       setTimeout(() => {
@@ -148,7 +159,6 @@ export default defineComponent({
     };
 
     const nameRules = [(v: string) => !!v || 'Nome é obrigatório'];
-
     const cpfRules = [
       (v: string) => !!v || 'CPF é obrigatório',
       (v: string) => v.length === 11 || 'CPF deve ter 11 dígitos',
@@ -164,20 +174,16 @@ export default defineComponent({
 
     const menu = ref(false);
 
-    // Formata a data para exibição no input
     const formattedDate = computed(() => {
-      return formData.value.birthDate
-        ? formData.value.birthDate.toLocaleDateString('pt-BR')
-        : '';
+      return formData.value.birthDate ? formData.value.birthDate.toLocaleDateString('pt-BR') : '';
     });
 
-    // Atualiza a data formatada quando o usuário seleciona uma nova data
     const updateFormattedDate = (date: Date | null) => {
       formData.value.birthDate = date;
       menu.value = false;
     };
 
-    const submitForm = () => {
+    const submitForm = async () => {
       if (!valid.value) return;
 
       if (!telegramStore.user) {
@@ -192,15 +198,22 @@ export default defineComponent({
       }
 
       const birthDateString = formData.value.birthDate
-        ? formData.value.birthDate.toISOString().split('T')[0] // Converte para "YYYY-MM-DD"
+        ? formData.value.birthDate.toISOString().split('T')[0]
         : '';
 
-      walletStore.createAccount(
-        telegramStore.user?.id,
-        formData.value.fullName,
-        cpfNumber,
-        birthDateString,
-      );
+      try {
+        await walletStore.createAccount(
+          telegramStore.user?.id,
+          formData.value.fullName,
+          cpfNumber,
+          birthDateString,
+        );
+
+        // 🔹 Define a mensagem de sucesso
+        successMessage.value = 'Conta criada com sucesso!';
+      } catch (error) {
+        console.error('Erro ao criar conta:', error);
+      }
     };
 
     return {
@@ -214,13 +227,13 @@ export default defineComponent({
       submitForm,
       walletStore,
       shortAddress,
+      successMessage, // 🔹 Retornando para o template
     };
   },
 });
 </script>
 
 <style scoped>
-/* Adicione no seu arquivo de estilos global */
 #ton-connect-button {
   margin: 16px 0;
 }
