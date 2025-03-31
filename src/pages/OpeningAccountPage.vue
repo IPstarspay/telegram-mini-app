@@ -198,7 +198,7 @@ export default defineComponent({
       }
 
       const birthDateString = formData.value.birthDate
-        ? formData.value.birthDate.toISOString().split('T')[0]
+        ? formData.value.birthDate.toISOString().split('pt-BR')[0]
         : '';
 
       try {
