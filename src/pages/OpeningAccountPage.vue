@@ -25,7 +25,6 @@
 
           <div
             id="ton-connect-button"
-            style="display: none;"
           />
         </v-card-text>
 
