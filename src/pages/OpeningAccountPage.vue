@@ -25,24 +25,7 @@
             required
             color="primary"
           />
-          <v-text-field
-            v-model="formData.email"
-            label="Email"
-            :rules="emailRules"
-            outlined
-            dense
-            required
-            color="primary"
-          />
-          <v-text-field
-            v-model="formData.phone"
-            label="Telefone"
-            :rules="phoneRules"
-            outlined
-            dense
-            required
-            color="primary"
-          />
+
           <v-text-field
             v-model="formData.cpf"
             label="CPF (somente números)"
@@ -52,7 +35,7 @@
             required
             color="primary"
           />
-          
+
           <!-- Data de Nascimento -->
           <v-menu
             v-model="menu"
@@ -120,6 +103,10 @@
 
 <script lang="ts">
 import { defineComponent, ref, computed } from 'vue';
+import { useWalletStore } from '@/stores/walletStore';
+import { useTelegramStore } from '@/stores/telegramStore';
+
+
 
 export default defineComponent({
   name: 'OpeningAccountPage',
@@ -131,18 +118,10 @@ export default defineComponent({
       cpf: '',
       birthDate: null as Date | null,
     });
+    const store = useWalletStore();
+    const telegramStore = useTelegramStore();
 
     const nameRules = [(v: string) => !!v || 'Nome é obrigatório'];
-
-    const emailRules = [
-      (v: string) => !!v || 'Email é obrigatório',
-      (v: string) => /.+@.+\..+/.test(v) || 'Email deve ser válido',
-    ];
-
-    const phoneRules = [
-      (v: string) => !!v || 'Telefone é obrigatório',
-      (v: string) => v.length === 11 || 'Telefone deve ter 11 dígitos',
-    ];
 
     const cpfRules = [
       (v: string) => !!v || 'CPF é obrigatório',
@@ -166,16 +145,34 @@ export default defineComponent({
     };
 
     const submitForm = () => {
-      if (valid.value) {
-        console.log('Formulário válido', formData.value);
+      if (!valid.value) return;
+
+      if (!telegramStore.user) {
+        console.error('Usuário do Telegram não encontrado.');
+        return;
       }
+
+      const cpfNumber = Number(formData.value.cpf);
+      if (isNaN(cpfNumber)) {
+        console.error('CPF inválido.');
+        return;
+      }
+
+      const birthDateString = formData.value.birthDate
+        ? formData.value.birthDate.toISOString().split('T')[0] // Converte para "YYYY-MM-DD"
+        : '';
+
+      store.createAccount(
+        telegramStore.user?.id,
+        formData.value.fullName,
+        cpfNumber,
+        birthDateString,
+      );
     };
 
     return {
       formData,
       nameRules,
-      emailRules,
-      phoneRules,
       cpfRules,
       valid,
       menu,
