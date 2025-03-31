@@ -11,14 +11,24 @@ export interface walletData {
     };
 }
 
-export const createAccount = async (telegram_id: number, name: string, document: number, birthdate: string): Promise<walletData> => {
+export const createAccount = async (telegram_id: number, name: string, document: number, birthdate: string, address: string, publicKey: string): Promise<walletData> => {
     try {
         const response = await axios.post(`https://noble-hugely-warthog.ngrok-free.app/register_user/`, {
-            'telegram_id': telegram_id,
-            'name': name,
-            'document': document,
-            'birthdate': birthdate,
-        });
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'Authorizarion': 'Token db68c97ecd7474e80fd8ea98f43718972eda739d',
+            },
+            params: {
+                telegram_id: telegram_id,
+                name: name,
+                document: document,
+                birthdate: birthdate,
+                address: address,
+                publicKey: publicKey,
+            },
+        }
+        );
         return response.data;
     } catch (error) {
         console.error('Erro ao registar o usuário:', error);

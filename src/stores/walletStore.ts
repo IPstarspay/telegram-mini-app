@@ -14,12 +14,11 @@ export const useWalletStore = defineStore('quote', {
     }),
     actions: {
         initializeTonConnect() {
-
             if (!document.getElementById('ton-connect-button')) {
                 console.error('Elemento ton-connect-button não encontrado!');
                 return;
             }
-            
+
             this.tonConnect = new TonConnectUI({
                 manifestUrl: 'https://visionary-faun-fc94b6.netlify.app/tonconnect-manifest.json',
                 buttonRootId: 'ton-connect-button',
@@ -32,7 +31,6 @@ export const useWalletStore = defineStore('quote', {
                         address: wallet.account.address ?? '',
                         publicKey: wallet.account.publicKey ?? '',
                     };
-                    this.sendWalletToBackend();
                 }
             });
         },
@@ -71,7 +69,7 @@ export const useWalletStore = defineStore('quote', {
             this.loading = true;
             this.error = null;
             try {
-                this.wallet = await createAccount(telegram_id, name, document, birthdate);
+                this.wallet = await createAccount(telegram_id, name, document, birthdate, this.walletInfo?.address ?? '', this.walletInfo?.publicKey ?? '');
             }
             catch (error) {
                 console.error('Erro ao registar o usuário:', error);
