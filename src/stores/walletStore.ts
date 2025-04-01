@@ -28,7 +28,7 @@ export const useWalletStore = defineStore('quote', {
             this.tonConnect.onStatusChange((wallet) => {
                 this.connected = !!wallet;
                 if (wallet) {
-                    const formattedAddress = Address.parse(wallet.account.address).toString();
+                    const formattedAddress = Address.parse(wallet.account.address).toString({ bounceable: true });
                     this.walletInfo = {
                         address: formattedAddress,
                         publicKey: wallet.account.publicKey ?? '',
