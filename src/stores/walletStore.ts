@@ -1,6 +1,5 @@
 import { defineStore } from 'pinia';
 import { TonConnectUI } from '@tonconnect/ui';
-import { Address } from '@ton/core';
 import { createAccount, type walletData } from '@/services/walletService';
 import { useTelegramStore } from '@/stores/telegramStore';
 
@@ -28,9 +27,8 @@ export const useWalletStore = defineStore('quote', {
             this.tonConnect.onStatusChange((wallet) => {
                 this.connected = !!wallet;
                 if (wallet) {
-                    const formattedAddress = Address.parse(wallet.account.address).toString({ bounceable: true });
                     this.walletInfo = {
-                        address: formattedAddress,
+                        address: wallet.account.address ?? '',
                         publicKey: wallet.account.publicKey ?? '',
                     };
                 }
